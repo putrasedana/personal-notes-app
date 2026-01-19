@@ -24,11 +24,11 @@ const id = {
   makeNewAccount: "Buat akun baru",
   fullName: "Nama Lengkap",
   confirmPassword: "Konfirmasi Password",
-  pageNotFoundMessage: "Halaman yang Anda cari tidak ada.",
+  pageNotFoundMessage: "Halaman yang kamu cari tidak ada.",
   goToHome: "Kembali ke Beranda",
   delete: "Hapus",
   note: "Catatan",
-  emptyStateDescriptionActive: "Buat catatan pertama Anda untuk memulai.",
+  emptyStateDescriptionActive: "Buat catatan pertama kamu untuk memulai.",
   emptyStateDescriptionArchived: "Catatan yang diarsipkan akan muncul di sini.",
   emptyStateTitleActive: "Tidak ada catatan",
   emptyStateTitleArchived: "Tidak ada catatan di arsip",
@@ -57,7 +57,7 @@ const id = {
   deleteNote: "Hapus Catatan",
   archiveNote: "Arsipkan Catatan",
   unarchiveNote: "Kembalikan Catatan",
-  alreadyLoggedInMessage: "Anda sudah login.",
+  alreadyLoggedInMessage: "Kamu sudah login.",
   language: "id-ID",
 };
 
