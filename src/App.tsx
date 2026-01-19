@@ -38,7 +38,8 @@ function App() {
   const { startActionLoading, stopActionLoading } = useActionLoading();
   const [archiveLoadingId, setArchiveLoadingId] = useState<string | null>(null);
 
-  let from = location.state?.from?.pathname || "/";
+  const from =
+    typeof location.state?.from === "string" ? location.state.from : "/";
 
   const loadNotes = async () => {
     try {
