@@ -25,6 +25,7 @@ import { useLocaleContext } from "./context/LocaleContext";
 import { useActionLoading } from "./context/ActionLoadingContext";
 import { withAntiFlickerLoading } from "./utils/withAntiFlickerLoading";
 import Spinner from "./components/Spinner";
+import GuestRoute from "./components/GuestRoute";
 
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -207,15 +208,13 @@ function App() {
 
       <main>
         <Routes>
-          {!authedUser && (
-            <>
-              <Route
-                path={"/login"}
-                element={<LoginPage onLoginSuccess={handleLogin} />}
-              />
-              <Route path={"/register"} element={<RegisterPage />} />
-            </>
-          )}
+          <Route element={<GuestRoute user={authedUser} />}>
+            <Route
+              path={"/login"}
+              element={<LoginPage onLoginSuccess={handleLogin} />}
+            />
+            <Route path={"/register"} element={<RegisterPage />} />
+          </Route>
 
           <Route element={<ProtectedRoute user={authedUser} />}>
             <Route
