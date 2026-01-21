@@ -26,6 +26,7 @@ import { useActionLoading } from "./context/ActionLoadingContext";
 import { withAntiFlickerLoading } from "./utils/withAntiFlickerLoading";
 import Spinner from "./components/Spinner";
 import GuestRoute from "./components/GuestRoute";
+import { sortNotesByDate } from "./utils";
 
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -38,20 +39,11 @@ function App() {
   const { startActionLoading, stopActionLoading } = useActionLoading();
   const [archiveLoadingId, setArchiveLoadingId] = useState<string | null>(null);
 
-  const from =
-    typeof location.state?.from === "string" ? location.state.from : "/";
-
   const loadNotes = async () => {
     try {
       setNotesLoading(true);
       const allNotes = await fetchAllNotes();
-
-      const sorted = [...allNotes].sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
-
-      setNotes(sorted);
+      setNotes(sortNotesByDate(allNotes));
     } catch (err) {
       console.error(err);
     } finally {
@@ -84,6 +76,8 @@ function App() {
   }, []);
 
   const handleLogin = async () => {
+    const from =
+      typeof location.state?.from === "string" ? location.state.from : "/";
     const token = getAccessToken();
 
     if (!token) return;
@@ -94,8 +88,9 @@ function App() {
 
     if (!error && data) {
       setAuthedUser(data);
-      await loadNotes();
       navigate(from, { replace: true });
+
+      await loadNotes();
     }
 
     setAuthLoading(false);
@@ -105,7 +100,7 @@ function App() {
     localStorage.removeItem("accessToken");
     setAuthedUser(null);
     setNotes([]);
-    navigate("/login");
+    navigate("/login", { replace: true });
   };
 
   const handleAddNote = async (title: string, body: string) => {
@@ -140,7 +135,8 @@ function App() {
         await deleteNote(id);
 
         const allNotes = await fetchAllNotes();
-        setNotes(allNotes);
+
+        setNotes(sortNotesByDate(allNotes));
 
         location.pathname.startsWith("/notes/")
           ? navigate(-1)
@@ -262,7 +258,7 @@ function App() {
               }
             />
           </Route>
-          <Route path="*" element={<NotFound user={authedUser} />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </div>

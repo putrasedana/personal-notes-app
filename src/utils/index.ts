@@ -1,3 +1,5 @@
+import { Note } from "./network-data";
+
 const showFormattedDate = (
   date: string | Date,
   locale: string = "id-ID",
@@ -60,7 +62,13 @@ const truncateText = (text: string, maxLength: number): string => {
   return text.substring(0, maxLength) + "...";
 };
 
+const sortNotesByDate = (notes: Note[]) => {
+  return [...notes].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+};
+
 // Simulate network delay for testing loading state
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export { showFormattedDate, truncateText, sleep };
+export { showFormattedDate, truncateText, sortNotesByDate, sleep };

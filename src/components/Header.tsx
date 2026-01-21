@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 import { HiMenu, HiX } from "react-icons/hi";
-import { User } from "../utils/network-data";
 import ThemeToggleButton from "./ThemeToggleButton";
 import LocaleToggleButton from "./LocaleToggleButton";
 import { useLocaleContext } from "../context/LocaleContext";
 import { useState } from "react";
 import Navbar from "./Navbar";
 import MobileMenuOverlay from "./MobileMenuOverlay";
+import { User } from "../utils/network-data";
 
 interface HeaderProps {
-  user: User;
+  user: User | null;
   onLogout: () => void;
   loading: boolean;
 }
