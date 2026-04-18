@@ -13,9 +13,7 @@ interface EmptyStateProps {
 const EmptyState: React.FC<EmptyStateProps> = ({
   title,
   description,
-  icon = (
-    <FaRegFileAlt className="w-20 h-20 mx-auto text-gray-300 dark:text-gray-600 mb-6" />
-  ),
+  icon = <FaRegFileAlt className="w-20 h-20 mx-auto text-gray-300 dark:text-gray-600 mb-6" />,
   buttonText,
   onButtonClick,
   showButton = true,
@@ -23,18 +21,12 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
   return (
     <div
-      className={`mt-10 p-6 rounded-xl bg-gray-100 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 ${className}`}
+      className={`mt-10 p-6 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 ${className}`}
     >
       <div className="text-center py-10">
         {icon}
-        <p className="text-gray-600 dark:text-gray-300 text-xl font-semibold mb-2">
-          {title}
-        </p>
-        {description && (
-          <p className="text-gray-500 dark:text-gray-400 text-base mb-6">
-            {description}
-          </p>
-        )}
+        <p className="text-gray-600 dark:text-gray-300 text-xl font-semibold mb-2">{title}</p>
+        {description && <p className="text-gray-500 dark:text-gray-400 text-base mb-6">{description}</p>}
         {showButton && onButtonClick && (
           <button
             type="button"

@@ -38,6 +38,7 @@ function App() {
   const { t } = useLocaleContext();
   const { startActionLoading, stopActionLoading } = useActionLoading();
   const [archiveLoadingId, setArchiveLoadingId] = useState<string | null>(null);
+  const isGuest = authedUser?.isGuest;
 
   const loadNotes = async () => {
     try {
@@ -52,11 +53,37 @@ function App() {
   };
 
   useEffect(() => {
+    if (isGuest) {
+      localStorage.setItem("guest-notes", JSON.stringify(notes));
+    }
+  }, [notes]);
+
+  useEffect(() => {
     const initApp = async () => {
       const token = getAccessToken();
 
+      if (token === "guest-token") {
+        const saved = localStorage.getItem("guest-notes");
+
+        setNotes(saved ? JSON.parse(saved) : []);
+      }
+
       if (!token) {
         setAuthLoading(false);
+        return;
+      }
+
+      // ✅ HANDLE GUEST HERE
+      if (token === "guest-token") {
+        setAuthedUser({
+          id: "guest",
+          name: "Guest",
+          email: "",
+          isGuest: true,
+        });
+
+        setAuthLoading(false);
+        setNotesLoading(false);
         return;
       }
 
@@ -69,18 +96,32 @@ function App() {
       setAuthedUser(data);
       setAuthLoading(false);
 
-      loadNotes();
+      if (!isGuest) {
+        loadNotes();
+      }
     };
 
     initApp();
   }, []);
 
   const handleLogin = async () => {
-    const from =
-      typeof location.state?.from === "string" ? location.state.from : "/";
+    const from = typeof location.state?.from === "string" ? location.state.from : "/";
     const token = getAccessToken();
 
     if (!token) return;
+
+    // ✅ HANDLE GUEST
+    if (token === "guest-token") {
+      setAuthedUser({
+        id: "guest",
+        name: "Guest",
+        email: "",
+        isGuest: true,
+      });
+
+      navigate(from, { replace: true });
+      return;
+    }
 
     setAuthLoading(true);
 
@@ -104,6 +145,23 @@ function App() {
   };
 
   const handleAddNote = async (title: string, body: string) => {
+    // ✅ GUEST MODE
+    if (isGuest) {
+      const newNote: Note = {
+        id: `guest-${Date.now()}`,
+        title,
+        body,
+        createdAt: new Date().toISOString(),
+        archived: false,
+      };
+
+      setNotes((prev) => [newNote, ...prev]);
+      navigate("/");
+
+      Swal.fire(swalToastConfig("success", "Note added (guest mode)"));
+      return;
+    }
+
     await withAntiFlickerLoading(
       async () => {
         const { error, data } = await addNote({ title, body });
@@ -120,15 +178,16 @@ function App() {
 
   const handleDelete = async (id: string) => {
     const result = await Swal.fire(
-      swalConfirmConfig(
-        t.deleteConfirmationTitle,
-        t.deleteConfirmationText,
-        t.confirmButtonText,
-        t.cancel,
-      ),
+      swalConfirmConfig(t.deleteConfirmationTitle, t.deleteConfirmationText, t.confirmButtonText, t.cancel),
     );
 
     if (!result.isConfirmed) return;
+
+    if (isGuest) {
+      setNotes((prev) => prev.filter((n) => n.id !== id));
+      Swal.fire(swalToastConfig("success", "Deleted (guest mode)"));
+      return;
+    }
 
     await withAntiFlickerLoading(
       async () => {
@@ -138,9 +197,7 @@ function App() {
 
         setNotes(sortNotesByDate(allNotes));
 
-        location.pathname.startsWith("/notes/")
-          ? navigate(-1)
-          : navigate(location.pathname, { replace: true });
+        location.pathname.startsWith("/notes/") ? navigate(-1) : navigate(location.pathname, { replace: true });
 
         Swal.fire(swalToastConfig("success", t.deleteSuccessMessage));
       },
@@ -150,15 +207,20 @@ function App() {
   };
 
   const handleToggleArchive = async (id: string) => {
+    if (isGuest) {
+      setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, archived: !n.archived } : n)));
+
+      Swal.fire(swalToastConfig("success", "Archived (guest mode)"));
+      return;
+    }
+
     const target = notes.find((n) => n.id === id);
     if (!target) return;
 
     const prevArchived = target.archived;
     const willArchive = !prevArchived;
 
-    setNotes((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, archived: willArchive } : n)),
-    );
+    setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, archived: willArchive } : n)));
 
     try {
       setArchiveLoadingId(id);
@@ -170,9 +232,7 @@ function App() {
         Swal.fire(swalToastConfig("success", t.unarchiveSuccessMessage));
       }
     } catch (err) {
-      setNotes((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, archived: prevArchived } : n)),
-      );
+      setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, archived: prevArchived } : n)));
       Swal.fire(swalToastConfig("error", t.archiveUnarchiveFailedMessage));
     } finally {
       setArchiveLoadingId(null);
@@ -186,30 +246,19 @@ function App() {
       bg-white dark:bg-gray-900 transition-colors"
       >
         <Spinner size={80} />
-        <p className="text-4xl mt-5 text-gray-800 dark:text-gray-50">
-          {t.loadingTheApplication}
-        </p>
+        <p className="text-4xl mt-5 text-gray-800 dark:text-gray-50">{t.loadingTheApplication}</p>
       </div>
     );
   }
 
   return (
     <div className="bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 h-full min-h-screen">
-      {authedUser && (
-        <Header
-          user={authedUser}
-          onLogout={handleLogout}
-          loading={authLoading}
-        />
-      )}
+      {authedUser && <Header user={authedUser} onLogout={handleLogout} loading={authLoading} />}
 
       <main>
         <Routes>
           <Route element={<GuestRoute user={authedUser} />}>
-            <Route
-              path={"/login"}
-              element={<LoginPage onLoginSuccess={handleLogin} />}
-            />
+            <Route path={"/login"} element={<LoginPage onLoginSuccess={handleLogin} />} />
             <Route path={"/register"} element={<RegisterPage />} />
           </Route>
 
@@ -242,15 +291,13 @@ function App() {
               }
             />
 
-            <Route
-              path="/notes/new"
-              element={<AddNote onAdd={handleAddNote} />}
-            />
+            <Route path="/notes/new" element={<AddNote onAdd={handleAddNote} />} />
 
             <Route
               path="/notes/:id"
               element={
                 <DetailNote
+                  notes={notes} // ✅ ADD THIS
                   onDelete={handleDelete}
                   onToggleArchive={handleToggleArchive}
                   archiveLoadingId={archiveLoadingId}

@@ -10,8 +10,7 @@ const en = {
   loading: "Loading application...",
   searchByTitle: "Search by title...",
   addNotetitlePlaceholder: "Note title...",
-  addNoteBodyPlaceholder:
-    "Write your note here... (Press enter for new paragraph, Ctrl+B for bold, Ctrl+I for italic)",
+  addNoteBodyPlaceholder: "Write your note here... (Press enter for new paragraph, Ctrl+B for bold, Ctrl+I for italic)",
   cancel: "Cancel",
   save: "Save",
   loginErrorMessage: "Incorrect email or password",
@@ -28,12 +27,11 @@ const en = {
   goToHome: "Go to Home",
   delete: "Delete",
   note: "Note",
-  emptyStateDescriptionActive: "You have no active notes. Create one now!",
-  emptyStateDescriptionArchived:
-    "You have no archived notes. Archive some notes to see them here.",
+  emptyStateDescriptionActive: "You have no active notes. Add one now!",
+  emptyStateDescriptionArchived: "You have no archived notes. Archive some notes to see them here.",
   emptyStateTitleActive: "No Active Notes",
   emptyStateTitleArchived: "No Archived Notes",
-  emptyStateButtonTextActive: "Create Note",
+  emptyStateButtonTextActive: "Add Note",
   emptyStateButtonTextArchived: "View Active Notes",
   deleteConfirmationTitle: "Delete note?",
   deleteConfirmationText: "Deleted notes cannot be recovered!",
@@ -46,8 +44,7 @@ const en = {
   failed: "Failed!",
   success: "Success!",
   deleteFailedMessage: "Failed to delete note. Please try again.",
-  archiveUnarchiveFailedMessage:
-    "Failed to update note archive status. Please try again.",
+  archiveUnarchiveFailedMessage: "Failed to update note archive status. Please try again.",
   loadingTheApplication: "Loading the application...",
   confirmButtonText: "Yes, proceed!",
   addNoteSuccessMessage: "Note added successfully.",
@@ -60,6 +57,7 @@ const en = {
   unarchiveNote: "Unarchive Note",
   alreadyLoggedInMessage: "You are already logged in.",
   language: "en-US",
+  loginAsGuest: "Login as Guest",
 };
 
 export default en;

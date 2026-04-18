@@ -45,8 +45,7 @@ const id = {
   failed: "Gagal!",
   success: "Berhasil!",
   deleteFailedMessage: "Gagal menghapus catatan. Silakan coba lagi.",
-  archiveUnarchiveFailedMessage:
-    "Gagal memperbarui status arsip catatan. Silakan coba lagi.",
+  archiveUnarchiveFailedMessage: "Gagal memperbarui status arsip catatan. Silakan coba lagi.",
   loadingTheApplication: "Memuat aplikasi...",
   confirmButtonText: "Ya, lanjutkan!",
   addNoteSuccessMessage: "Catatan berhasil ditambahkan.",
@@ -59,6 +58,7 @@ const id = {
   unarchiveNote: "Kembalikan Catatan",
   alreadyLoggedInMessage: "Kamu sudah login.",
   language: "id-ID",
+  loginAsGuest: "Masuk sebagai Guest",
 };
 
 export default id;

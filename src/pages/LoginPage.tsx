@@ -50,15 +50,22 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     }
   };
 
+  const handleGuestLogin = () => {
+    // mark as guest using a special token
+    putAccessToken("guest-token");
+
+    if (onLoginSuccess) {
+      onLoginSuccess();
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div className="w-full max-w-md rounded-2xl px-4 py-8 sm:px-8 shadow-lg border-2 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-800">
-        <h1 className="text-3xl font-bold text-center mb-2 text-gray-900 dark:text-gray-100">
-          {t.login}
-        </h1>
-        <p className="text-center text-gray-500 dark:text-gray-400 mb-6">
-          {t.loginsubtitle}
-        </p>
+        <h1 className="text-3xl font-bold text-center mb-2 text-gray-900 dark:text-gray-100">{t.login}</h1>
+        <p className="text-center text-gray-500 dark:text-gray-400 mb-6">{t.loginsubtitle}</p>
 
         {error && (
           <div className="mb-4 rounded-lg bg-red-500/10 dark:bg-red-900/20 text-red-400 dark:text-red-300 px-4 py-2 text-sm">
@@ -93,6 +100,16 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             className="w-full rounded-lg bg-gray-800 dark:bg-gray-200 py-2.5 font-semibold text-white dark:text-gray-800 cursor-pointer hover:bg-gray-900 dark:hover:bg-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? t.login + "..." : t.login}
+          </button>
+
+          <p className="text-center text-gray-500 dark:text-gray-400">or</p>
+
+          <button
+            type="button"
+            onClick={handleGuestLogin}
+            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 py-2.5 font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-gray-100 transition-all duration-200"
+          >
+            {t.loginAsGuest || "Login as Guest"}
           </button>
         </form>
 

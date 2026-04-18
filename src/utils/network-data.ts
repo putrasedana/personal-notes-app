@@ -25,6 +25,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  isGuest?: boolean;
 }
 
 interface Note {
@@ -50,10 +51,7 @@ function putAccessToken(accessToken: string): void {
 }
 
 // Fetch with token
-async function fetchWithToken(
-  url: string,
-  options: RequestInit = {}
-): Promise<Response> {
+async function fetchWithToken(url: string, options: RequestInit = {}): Promise<Response> {
   return fetch(url, {
     ...options,
     headers: {
@@ -64,10 +62,7 @@ async function fetchWithToken(
 }
 
 // API Functions
-async function login({
-  email,
-  password,
-}: LoginCredentials): Promise<ApiResult<{ accessToken: string }>> {
+async function login({ email, password }: LoginCredentials): Promise<ApiResult<{ accessToken: string }>> {
   const response = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: {
@@ -76,8 +71,7 @@ async function login({
     body: JSON.stringify({ email, password }),
   });
 
-  const responseJson: ApiResponse<{ accessToken: string }> =
-    await response.json();
+  const responseJson: ApiResponse<{ accessToken: string }> = await response.json();
 
   if (responseJson.status !== "success") {
     alert(responseJson.message);
@@ -87,11 +81,7 @@ async function login({
   return { error: false, data: responseJson.data! };
 }
 
-async function register({
-  name,
-  email,
-  password,
-}: RegisterData): Promise<{ error: boolean }> {
+async function register({ name, email, password }: RegisterData): Promise<{ error: boolean }> {
   const response = await fetch(`${BASE_URL}/register`, {
     method: "POST",
     headers: {
@@ -215,10 +205,7 @@ async function deleteNote(id: string): Promise<ApiResult<{ message: string }>> {
 }
 
 async function fetchAllNotes(): Promise<Note[]> {
-  const [activeRes, archivedRes] = await Promise.all([
-    getActiveNotes(),
-    getArchivedNotes(),
-  ]);
+  const [activeRes, archivedRes] = await Promise.all([getActiveNotes(), getArchivedNotes()]);
 
   if (activeRes.error || archivedRes.error) {
     throw new Error("Failed to fetch notes");
@@ -243,11 +230,4 @@ export {
   fetchAllNotes,
 };
 
-export type {
-  LoginCredentials,
-  RegisterData,
-  NoteInput,
-  User,
-  Note,
-  ApiResult,
-};
+export type { LoginCredentials, RegisterData, NoteInput, User, Note, ApiResult };

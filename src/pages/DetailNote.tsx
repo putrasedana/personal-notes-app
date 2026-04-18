@@ -5,23 +5,22 @@ import { MdArchive, MdUnarchive } from "react-icons/md";
 import ActionButtons from "../components/ActionButtons";
 import parse from "html-react-parser";
 import NotFound from "./NotFound";
-import { getNote, Note } from "../utils/network-data";
+import { getAccessToken, getNote, Note } from "../utils/network-data";
 import { useLocaleContext } from "../context/LocaleContext";
 import { showSmartDate } from "../utils";
 
 interface DetailNoteProps {
+  notes: Note[]; // ✅ ADD
   onDelete: (id: string) => void;
   onToggleArchive: (id: string) => void;
   archiveLoadingId: string | null;
 }
 
-const DetailNote: React.FC<DetailNoteProps> = ({
-  onDelete,
-  onToggleArchive,
-  archiveLoadingId,
-}) => {
+const DetailNote: React.FC<DetailNoteProps> = ({ notes, onDelete, onToggleArchive, archiveLoadingId }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  const isGuest = getAccessToken() === "guest-token";
 
   const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,6 +29,14 @@ const DetailNote: React.FC<DetailNoteProps> = ({
 
   useEffect(() => {
     if (!id) return;
+
+    // ✅ GUEST MODE
+    if (isGuest) {
+      const foundNote = notes.find((n) => n.id === id);
+      setNote(foundNote || null);
+      setLoading(false);
+      return;
+    }
 
     const fetchNote = async () => {
       const { error, data } = await getNote(id);
@@ -42,15 +49,13 @@ const DetailNote: React.FC<DetailNoteProps> = ({
 
   if (loading) return null;
 
-  if (!note) return <NotFound user={null} />;
+  if (!note) return <NotFound />;
 
   return (
     <div className="mx-auto max-w-5xl px-4 md:px-6 lg:px-8 xl:px-0 py-6 lg:py-10">
       <div
         className={`inline-flex items-center gap-1 mt-5 px-6 py-2 rounded-full font-medium ${
-          note.archived
-            ? "visible bg-amber-200 text-gray-800"
-            : "visible bg-green-200 text-gray-800"
+          note.archived ? "visible bg-amber-200 text-gray-800" : "visible bg-green-200 text-gray-800"
         }`}
       >
         {note.archived ? (
@@ -66,9 +71,7 @@ const DetailNote: React.FC<DetailNoteProps> = ({
         )}
       </div>
 
-      <h1 className="text-[48px] mb-2 wrap-break-words font-bold">
-        {note.title}
-      </h1>
+      <h1 className="text-[48px] mb-2 wrap-break-words font-bold">{note.title}</h1>
 
       <div className="flex items-center gap-2 text-gray-400 mb-6">
         <div className="flex items-center gap-1.5">
@@ -88,9 +91,7 @@ const DetailNote: React.FC<DetailNoteProps> = ({
         onDelete={onDelete}
         onToggleArchive={() => {
           onToggleArchive(note.id);
-          setNote((prev) =>
-            prev ? { ...prev, archived: !prev.archived } : prev,
-          );
+          setNote((prev) => (prev ? { ...prev, archived: !prev.archived } : prev));
         }}
         onEdit={() => navigate(`/notes/${note.id}/edit`)}
         isArchived={note.archived}
