@@ -15,13 +15,7 @@ export interface NotesListProps {
   archiveLoadingId: string | null;
 }
 
-const NoteList: React.FC<NotesListProps> = ({
-  notes,
-  onDelete,
-  onToggleArchive,
-  type,
-  archiveLoadingId,
-}) => {
+const NoteList: React.FC<NotesListProps> = ({ notes, onDelete, onToggleArchive, type, archiveLoadingId }) => {
   const navigate = useNavigate();
   const { locale, t } = useLocaleContext();
 

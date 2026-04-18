@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdArchive, MdUnarchive } from "react-icons/md";
 import ActionButtons from "../components/ActionButtons";
@@ -10,7 +10,7 @@ import { useLocaleContext } from "../context/LocaleContext";
 import { showSmartDate } from "../utils";
 
 interface DetailNoteProps {
-  notes: Note[]; // ✅ ADD
+  notes: Note[];
   onDelete: (id: string) => void;
   onToggleArchive: (id: string) => void;
   archiveLoadingId: string | null;
@@ -18,7 +18,6 @@ interface DetailNoteProps {
 
 const DetailNote: React.FC<DetailNoteProps> = ({ notes, onDelete, onToggleArchive, archiveLoadingId }) => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   const isGuest = getAccessToken() === "guest-token";
 
@@ -30,7 +29,6 @@ const DetailNote: React.FC<DetailNoteProps> = ({ notes, onDelete, onToggleArchiv
   useEffect(() => {
     if (!id) return;
 
-    // ✅ GUEST MODE
     if (isGuest) {
       const foundNote = notes.find((n) => n.id === id);
       setNote(foundNote || null);
@@ -93,7 +91,6 @@ const DetailNote: React.FC<DetailNoteProps> = ({ notes, onDelete, onToggleArchiv
           onToggleArchive(note.id);
           setNote((prev) => (prev ? { ...prev, archived: !prev.archived } : prev));
         }}
-        onEdit={() => navigate(`/notes/${note.id}/edit`)}
         isArchived={note.archived}
         archiveLoadingId={archiveLoadingId}
       />

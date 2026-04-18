@@ -73,7 +73,6 @@ function App() {
         return;
       }
 
-      // ✅ HANDLE GUEST HERE
       if (token === "guest-token") {
         setAuthedUser({
           id: "guest",
@@ -110,7 +109,6 @@ function App() {
 
     if (!token) return;
 
-    // ✅ HANDLE GUEST
     if (token === "guest-token") {
       setAuthedUser({
         id: "guest",
@@ -145,7 +143,6 @@ function App() {
   };
 
   const handleAddNote = async (title: string, body: string) => {
-    // ✅ GUEST MODE
     if (isGuest) {
       const newNote: Note = {
         id: `guest-${Date.now()}`,
@@ -185,6 +182,7 @@ function App() {
 
     if (isGuest) {
       setNotes((prev) => prev.filter((n) => n.id !== id));
+      location.pathname.startsWith("/notes/") ? navigate(-1) : navigate(location.pathname, { replace: true });
       Swal.fire(swalToastConfig("success", "Deleted (guest mode)"));
       return;
     }
@@ -297,7 +295,7 @@ function App() {
               path="/notes/:id"
               element={
                 <DetailNote
-                  notes={notes} // ✅ ADD THIS
+                  notes={notes}
                   onDelete={handleDelete}
                   onToggleArchive={handleToggleArchive}
                   archiveLoadingId={archiveLoadingId}
