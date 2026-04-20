@@ -110,13 +110,8 @@ function App() {
     if (!token) return;
 
     if (token === "guest-token") {
-      setAuthedUser({
-        id: "guest",
-        name: "Guest",
-        email: "",
-        isGuest: true,
-      });
-
+      setAuthedUser({ id: "guest", name: "Guest", email: "", isGuest: true });
+      setNotesLoading(false);
       navigate(from, { replace: true });
       return;
     }
